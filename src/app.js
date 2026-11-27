@@ -98,7 +98,7 @@ function anatomy(r, { large = false, animate = false, labels = null } = {}) {
     return `<div class="seg seg-${s.key}${cls}" style="--i:${i++}">
       <span class="seg-chars">${chars}</span>
       <span class="seg-meaning">${esc(s.meaning)}</span>
-      <span class="seg-label">${esc(labels?.[s.key] ?? s.label)}</span>
+      <span class="seg-label">${esc(labels?.[s.key] ?? s.label)}${s.office ? `, ${esc(s.office)} ROC` : ''}</span>
     </div>`;
   }).join('');
   const cls = ['anatomy', large && 'anatomy-lg', r.kind === 'llpin' && 'anatomy-llp', animate && !reduceMotion() && 'animate'].filter(Boolean).join(' ');
@@ -328,12 +328,12 @@ function rowHTML(r, k = 0) {
   const na = (v, why) => (v == null ? `<span class="na" title="${esc(why)}">Not in LLPIN</span>` : esc(v));
   const fields = f
     ? `<span class="c c-kind" role="cell">${esc(kindText(f))}</span>
-       <span class="c c-state" role="cell">${f.entity === 'LLP' ? na(null, LLP_NOTE) : esc(f.state)}</span>
+       <span class="c c-state" role="cell">${f.entity === 'LLP' ? na(null, LLP_NOTE) : esc(f.state)}${f.office ? `<span class="sub" title="The CIN uses ${esc(f.stateCode)}, the code of the ${esc(f.office)} registrar office">${esc(f.office)} ROC (${esc(f.stateCode)})</span>` : ''}</span>
        <span class="c c-year" role="cell">${f.entity === 'LLP' ? '<span class="na">—</span>' : esc(f.year)}</span>
        <span class="c c-type" role="cell">${esc(f.type)}</span>
        <span class="c-sum">${f.entity === 'LLP'
          ? `Limited liability partnership<span class="muted">State and year aren’t part of an LLPIN</span>`
-         : `${esc(kindText(f))} in ${esc(f.state)}, ${esc(f.year)}<span class="muted">${esc(f.type)}</span>`}</span>`
+         : `${esc(kindText(f))} in ${esc(f.state)}${f.office ? ` (${esc(f.office)} ROC)` : ''}, ${esc(f.year)}<span class="muted">${esc(f.type)}</span>`}</span>`
     : '';
   return `<li class="row s-${r.status}${open ? ' is-open' : ''}" role="row" data-key="${esc(key)}"${k < 16 ? ` style="--k:${k}"` : ''}>
     <button type="button" class="row-btn" aria-expanded="${open}" data-act="toggle">
@@ -558,14 +558,14 @@ function applySuggestion(r) {
 
 // ---------------------------------------------------------------- export
 
-const COLS = ['Line', 'Input', 'Number', 'Result', 'Entity', 'Listing', 'State', 'State code', 'Year', 'Company type', 'Type code', 'Industry code', 'Registration no.', 'Problem', 'Duplicate of line'];
+const COLS = ['Line', 'Input', 'Number', 'Result', 'Entity', 'Listing', 'State', 'State code', 'ROC office', 'Year', 'Company type', 'Type code', 'Industry code', 'Registration no.', 'Problem', 'Duplicate of line'];
 
 function exportRows(list) {
   return list.map((r) => {
     const f = r.fields || {};
     return [
       r.line, r.input.trim(), r.id, STATUS_LABEL[r.status], f.entity ?? '', f.listed ?? (f.entity === 'LLP' ? 'Not applicable' : ''),
-      f.state ?? '', f.stateCode ?? '', f.year ?? '', f.type ?? '', f.typeCode ?? '', f.industry ?? '', f.reg ?? '',
+      f.state ?? '', f.stateCode ?? '', f.office ?? '', f.year ?? '', f.type ?? '', f.typeCode ?? '', f.industry ?? '', f.reg ?? '',
       [...r.errors.map((e) => e.msg), ...r.warnings].join(' '), r.duplicateOf ?? '',
     ];
   });
@@ -609,6 +609,29 @@ async function copyText(text) {
     t.remove();
   }
 }
+
+// ---------------------------------------------------------------- theme
+// Follows the device until the reader picks one; the choice is remembered.
+
+const themeBtn = $('#theme');
+const themeLabel = $('#theme-label');
+const isDark = () => {
+  const t = document.documentElement.dataset.theme;
+  return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+};
+function syncThemeButton() {
+  const dark = isDark();
+  themeLabel.textContent = dark ? 'Light' : 'Dark';
+  themeBtn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+}
+themeBtn.addEventListener('click', () => {
+  const next = isDark() ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('theme', next); } catch { /* private mode: still switches for this visit */ }
+  syncThemeButton();
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncThemeButton);
+syncThemeButton();
 
 // ---------------------------------------------------------------- start
 

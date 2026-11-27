@@ -71,6 +71,10 @@ export const STATES = {
   WB: 'West Bengal',
 };
 
+// Codes that name a registrar (ROC) office rather than a state. The state is the same,
+// so MH and PN both decode to Maharashtra; the office tells them apart.
+export const ROC_OFFICES = { PN: 'Pune', TZ: 'Coimbatore' };
+
 export const STATE_NOTES = {
   PN: 'PN is the code of the ROC office in Pune, used on older Maharashtra CINs.',
   TZ: 'TZ is the code of the ROC office in Coimbatore, used on older Tamil Nadu CINs.',
@@ -400,6 +404,7 @@ function checkCIN(s, notes) {
   };
   r.segments = CIN_SEGMENTS.map((seg) => ({
     key: seg.key, label: seg.label, text: at(seg), meaning: meanings[seg.key], bad: segBad[seg.key] || false,
+    office: seg.key === 'state' ? ROC_OFFICES[state] || null : null,
   }));
 
   if (valid) {
@@ -408,6 +413,7 @@ function checkCIN(s, notes) {
       listed: listing === 'L' ? 'Listed' : 'Unlisted',
       state: STATES[state],
       stateCode: state,
+      office: ROC_OFFICES[state] || null,
       year,
       type: typeInfo.label,
       typeCode: type,
@@ -551,6 +557,7 @@ function checkLLPIN(s, notes) {
       listed: null,
       state: null,
       stateCode: null,
+      office: null,
       year: null,
       type: 'Limited liability partnership',
       typeCode: 'LLP',

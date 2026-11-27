@@ -10,7 +10,7 @@ test('decodes the example CIN from the brief', () => {
   assert.equal(r.status, 'valid');
   assert.deepEqual(
     { ...r.fields },
-    { entity: 'Company', listed: 'Listed', state: 'Maharashtra', stateCode: 'MH', year: 1973, type: 'Public limited company', typeCode: 'PLC', industry: '17110', reg: '019786' },
+    { entity: 'Company', listed: 'Listed', state: 'Maharashtra', stateCode: 'MH', office: null, year: 1973, type: 'Public limited company', typeCode: 'PLC', industry: '17110', reg: '019786' },
   );
 });
 
@@ -19,6 +19,9 @@ test('real CINs of different shapes', () => {
   assert.equal(analyze('L74899DL1993GOI054155').fields.type, 'Government company (Central Government)');
   assert.equal(analyze('L65993PN2007PLC130076').fields.state, 'Maharashtra'); // Bajaj Auto, ROC Pune code
   assert.equal(analyze('L29120TZ1960PLC000351').fields.state, 'Tamil Nadu'); // ELGI Equipments, ROC Coimbatore code
+  // MH and PN are the same state; the registrar office is what differs.
+  assert.equal(analyze('L65993PN2007PLC130076').fields.office, 'Pune');
+  assert.equal(analyze('L17110MH1973PLC019786').fields.office, null);
   assert.equal(analyze('U72900KA2019OPC123456').fields.type, 'One person company');
   assert.equal(analyze('U74999TG2016PTC123456').fields.state, 'Telangana');
 });

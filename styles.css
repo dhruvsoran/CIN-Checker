@@ -23,8 +23,11 @@
   --line: #D9DEE6;
   --line-soft: #E8ECF1;
   --accent: #2340C8;
-  --accent-ink: #FFFFFF;
+  --accent-strong: #2340C8;
+  --on-accent: #FFFFFF;
   --accent-soft: #E6EAFB;
+  --glow: rgba(35, 64, 200, 0.07);
+  --shadow: 0 1px 2px rgba(22, 32, 51, 0.04), 0 12px 32px -20px rgba(22, 32, 51, 0.18);
 
   --valid: #17723F;
   --valid-bg: #E2F2E8;
@@ -52,32 +55,65 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --page: #0F1622;
-    --panel: #172131;
-    --sunk: #131C2A;
-    --ink: #E6EBF2;
-    --muted: #A3AEC0;
-    --faint: #6F7B90;
-    --line: #2B384C;
-    --line-soft: #223044;
-    --accent: #8FA2FF;
-    --accent-ink: #0F1622;
-    --accent-soft: #24305A;
-    --valid: #6BD39A;
-    --valid-bg: #163526;
-    --warning: #F2BC62;
-    --warning-bg: #3A2C14;
-    --invalid: #FF8F86;
-    --invalid-bg: #42201F;
-    --s-listing: #8FA2FF;
-    --s-industry: #C49BF0;
-    --s-state: #5FD1C3;
-    --s-year: #F08BC4;
-    --s-type: #79BCEB;
-    --s-reg: #A3AEC0;
+/* Dark theme: follows the device unless the reader picks one with the header switch. */
+:root[data-theme='dark'] {
+    --page: #0A1020;
+    --panel: #10192D;
+    --sunk: #0D1528;
+    --ink: #EDF1F8;
+    --muted: #9CA8BD;
+    --faint: #66738C;
+    --line: #22304A;
+    --line-soft: #19253D;
+    --accent: #93A0FF;
+    --accent-strong: #5465F2;
+    --on-accent: #FFFFFF;
+    --accent-soft: #1D2856;
+    --glow: rgba(110, 125, 255, 0.16);
+    --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 20px 40px -24px rgba(0, 0, 0, 0.6);
+    --valid: #5FD99A;
+    --valid-bg: #0F3324;
+    --warning: #F5C065;
+    --warning-bg: #3A2A0E;
+    --invalid: #FF8A80;
+    --invalid-bg: #401A1C;
+    --s-listing: #93A0FF;
+    --s-industry: #C893FF;
+    --s-state: #45D6C2;
+    --s-year: #FF7DB6;
+    --s-type: #62C3FF;
+    --s-reg: #AAB5C8;
     color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+      --page: #0A1020;
+      --panel: #10192D;
+      --sunk: #0D1528;
+      --ink: #EDF1F8;
+      --muted: #9CA8BD;
+      --faint: #66738C;
+      --line: #22304A;
+      --line-soft: #19253D;
+      --accent: #93A0FF;
+      --accent-strong: #5465F2;
+      --on-accent: #FFFFFF;
+      --accent-soft: #1D2856;
+      --glow: rgba(110, 125, 255, 0.16);
+      --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 20px 40px -24px rgba(0, 0, 0, 0.6);
+      --valid: #5FD99A;
+      --valid-bg: #0F3324;
+      --warning: #F5C065;
+      --warning-bg: #3A2A0E;
+      --invalid: #FF8A80;
+      --invalid-bg: #401A1C;
+      --s-listing: #93A0FF;
+      --s-industry: #C893FF;
+      --s-state: #45D6C2;
+      --s-year: #FF7DB6;
+      --s-type: #62C3FF;
+      --s-reg: #AAB5C8;
+      color-scheme: dark;
   }
 }
 
@@ -136,6 +172,24 @@ body::before {
   font-weight: 700; font-size: 1.125rem; letter-spacing: -0.01em;
   color: var(--ink); text-decoration: none;
 }
+.theme-btn {
+  margin-left: auto; align-self: center;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  min-height: 2.25rem; padding: 0.25rem 0.75rem;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--panel); color: var(--muted);
+  font-size: 0.875rem; font-weight: 500; cursor: pointer;
+}
+.theme-btn:hover { color: var(--ink); border-color: var(--faint); }
+.theme-btn svg { width: 1rem; height: 1rem; }
+.theme-btn .i-sun { display: none; }
+:root[data-theme='dark'] .theme-btn .i-sun { display: block; }
+:root[data-theme='dark'] .theme-btn .i-moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .theme-btn .i-sun { display: block; }
+  :root:not([data-theme='light']) .theme-btn .i-moon { display: none; }
+}
+
 .top-tool {
   color: var(--muted); font-size: 0.9375rem;
   padding-left: 0.75rem; border-left: 1px solid var(--line);
@@ -167,6 +221,7 @@ body::before {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
 }
 
 /* ------------------------------------------------------------- input */
@@ -289,8 +344,8 @@ textarea::placeholder { color: var(--faint); }
 .btn:disabled:hover { border-color: var(--line); background: var(--panel); }
 .btn-quiet { border-color: transparent; background: transparent; color: var(--muted); }
 .btn-quiet:hover { color: var(--ink); background: var(--sunk); border-color: transparent; }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.btn-primary:hover { background: color-mix(in srgb, var(--accent) 88%, var(--ink)); border-color: transparent; }
+.btn-primary { background: var(--accent-strong); border-color: var(--accent-strong); color: var(--on-accent); font-weight: 600; }
+.btn-primary:hover { background: color-mix(in srgb, var(--accent-strong) 86%, #000); border-color: transparent; }
 .btn-sm { min-height: 2.25rem; padding: 0.375rem 0.75rem; font-size: 0.875rem; }
 
 /* ------------------------------------------------------------- anatomy */
@@ -363,7 +418,10 @@ textarea::placeholder { color: var(--faint); }
 
 /* ------------------------------------------------------------- empty state */
 
-.empty { position: relative; overflow: hidden; padding: clamp(1.25rem, 4vw, 2.5rem); }
+.empty {
+  position: relative; overflow: hidden; padding: clamp(1.25rem, 4vw, 2.5rem);
+  background: radial-gradient(70% 55% at 18% 0%, var(--glow), transparent 70%), var(--panel);
+}
 /* The CIN stripe: six colours in the proportions of the six parts (1:5:2:4:3:6). */
 .empty::before, .top-stripe {
   background: linear-gradient(90deg,
@@ -534,6 +592,7 @@ textarea::placeholder { color: var(--faint); }
 .c-msg .dup:first-child { margin-left: 0; }
 
 .na { color: var(--faint); }
+.sub { display: block; color: var(--muted); font-size: 0.8125rem; line-height: 1.4; }
 
 .chev::before {
   content: ''; display: block; width: 0.5rem; height: 0.5rem;
