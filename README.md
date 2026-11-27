@@ -2,7 +2,7 @@
 
 Paste a list of Indian CINs and LLPINs, one per line. For each one, the page shows whether it is valid (and if not, exactly what is wrong), whether it is a company or an LLP, listed or unlisted, the state, the year of incorporation and the company type.
 
-**Live:** _add your link here_
+**Live:** https://filesure-cin-checker-roan.vercel.app/
 
 Plain HTML, CSS and JavaScript. No framework, no build step, no network requests: everything runs in the browser, so a pasted client list never leaves the user's machine.
 
